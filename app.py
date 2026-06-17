@@ -11,17 +11,43 @@ if "xp" not in st.session_state:
     st.session_state.xp =0
 
 if "habits" not in st.session_state:
-    # A starting dictionary of habits and their completion status
-    st.session_state.habits ={
-        "Drink seven glasses of water": False,
-        "Eat breakfast": False,
-        "Spend an hour outside": False
-    }
+    #List of dictionaries to track "type" and "completed" status cleanly
+    st.session_state.habits = [
+        {"name": "Drink seven glasses of water", "completed": False, "type": "default"},
+        {"name": "Eat breakfast", "completed": False, "type": "default"},
+        {"name": "Spend an hour outside", "completed": False, "type": "default"}
+    ]
+if "current_level" not in st.session_state:
+    st.session_state.current_level = (st.session_state.xp // 100) + 1
 
+if "last_reset_date" not in st.session_state:
+    st.session_state.last_reset_date = datetime.now().date()
+
+current_date = datetime.now().date()
+
+# If the computer's current date is past our saved reset date, a new day has dawned!
+if current_date > st.session_state.last_reset_date:
+    # 1. Filter out and delete all user-added (custom) quests
+    st.session_state.habits = [h for h in st.session_state.habits if h["type"] == "default"]
+    
+    # 2. Reset completion statuses of the 3 default quests back to False
+    for habit in st.session_state.habits:
+        habit["completed"] = False
+        
+    # 3. Save the new date to memory vault and refresh page
+    st.session_state.last_reset_date = current_date
+    st.toast("🌅 A new day dawns! Quests have reset.")
+    st.rerun()
 
 #Level up logic
 player_level = (st.session_state.xp//100)+1
 xp_remainder = st.session_state.xp % 100
+
+if player_level > st.session_state.current_level:
+    st.balloons()
+    st.toast(f"🚀 LEVEL UP! Welcome to Level {player_level}!")
+    #Update level tracking vault so it only fires once per level
+    st.session_state.current_level = player_level
 
 #layout
 col1, col2 = st.columns(2)
@@ -36,23 +62,19 @@ st.write(f"{xp_remainder}/100 XP to Level {player_level +1} ✨")
 st.divider()
 
 st.subheader("Today's Quests ⚔️")
-for habit_name, is_done in list(st.session_state.habits.items()):
+for index, habit in enumerate(st.session_state.habits):
+    habit_name = habit["name"]
+    is_done = habit["completed"]
+    quest_type = habit["type"]
     
-    #Rendering the checkbox
-    check = st.checkbox(habit_name,value=is_done,key=habit_name, disabled = is_done)
-    
+    # Assign point values based on rules
+    pts = 15 if quest_type == "default" else 25
+    label_text = f"{habit_name} (+{pts} XP)"
+    # Render the checkbox
+    check = st.checkbox(label_text, value=is_done, key=f"habit_{index}", disabled=is_done)
     if check and not is_done:
-        #If it gets checked and is false in the memory
-        old_level = (st.session_state.xp//100)+1
-
-        st.session_state.habits[habit_name] = True
-        st.session_state.xp+=25
-        new_level = (st.session_state.xp//100)+1
-
-        if new_level>old_level:
-            #Level up effect
-            st.balloons()
-            st.toast(f"🚀 LEVEL UP! You are now level {new_level}!")
+        st.session_state.habits[index]["completed"] = True
+        st.session_state.xp += pts
         st.rerun()
 
 
@@ -61,18 +83,24 @@ st.divider()
 st.subheader("➕ Craft a New Quest")
 
 #Addin new habits
-with st.form(key = "quest_crafter", clear_on_submit=True):
+with st.form(key="quest_crafter", clear_on_submit=True):
     new_habit = st.text_input("What habit do you want to track?", placeholder="e.g., Meditate for 10 mins")
     submit_button = st.form_submit_button("Add to Quest Log")
 
     if submit_button:
         if new_habit:
-            if new_habit not in st.session_state.habits:
-                st.session_state.habits[new_habit] = False
-                st.toast(f"✅ Added quest: {new_habit}") # Clean pop-up message
-                st.rerun()
-            else:
+            # Calculate total custom quests currently active
+            custom_quest_count = sum(1 for h in st.session_state.habits if h["type"] == "custom")
+            
+            if custom_quest_count >= 7:
+                st.error("🛡️ Quest log full! You can only maintain up to 7 custom habits at once.")
+            elif any(h["name"].lower() == new_habit.lower() for h in st.session_state.habits):
                 st.error("This habit already exists!")
+            else:
+                # Add with explicit "custom" type flag
+                st.session_state.habits.append({"name": new_habit, "completed": False, "type": "custom"})
+                st.toast(f"✅ Added custom quest: {new_habit}")
+                st.rerun()
         else:
             st.warning("Please type something first!")
 
