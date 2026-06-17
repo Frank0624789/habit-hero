@@ -66,7 +66,7 @@ for index, habit in enumerate(st.session_state.habits):
     quest_type = habit["type"]
     
     #Assign point values based on rules
-    pts = 15 if (quest_type == "default") else (15000 if habit_name == "maxlevelpython" else 25)
+    pts = 15 if (quest_type == "default") else (15000 if habit_name == "maxmilestonepython" else 25)
     label_text = f"{habit_name} (+{pts} XP)"
     #Render the checkbox
     check = st.checkbox(label_text, value=is_done, key=f"habit_{index}", disabled=is_done)
@@ -120,11 +120,11 @@ badge_cols = st.columns(5)
 #Milestones at lvl 10, 20, 30, 40, 50
 milestones = [10, 20, 30, 40, 50]
 badge_images = [
-    "C:\Frank\Python\habit-hero\images\Bronze.png",
-    "C:\Frank\Python\habit-hero\images\Silver.png",
-    "C:\Frank\Python\habit-hero\images\Gold.png",
-    "C:\Frank\Python\habit-hero\images\Diamond.png",
-    "C:\Frank\Python\habit-hero\images\Prestige.png"
+    "images/Bronze.png",
+    "images/Silver.png",
+    "images/Gold.png",
+    "images/Diamond.png",
+    "images/Prestige.png"
 ]
 
 for i, milestone in enumerate(milestones):
