@@ -25,16 +25,14 @@ if "last_reset_date" not in st.session_state:
 
 current_date = datetime.now().date()
 
-# If the computer's current date is past our saved reset date, a new day has dawned!
+#If the computer's current date is past our saved reset date, a new day has dawned!
 if current_date > st.session_state.last_reset_date:
-    # 1. Filter out and delete all user-added (custom) quests
+    #Filter out and delete all custom quests
     st.session_state.habits = [h for h in st.session_state.habits if h["type"] == "default"]
-    
-    # 2. Reset completion statuses of the 3 default quests back to False
+    #Reset completion statuses of the 3 default quests back to False
     for habit in st.session_state.habits:
         habit["completed"] = False
-        
-    # 3. Save the new date to memory vault and refresh page
+    #Save the new date to memory vault and refresh page
     st.session_state.last_reset_date = current_date
     st.toast("🌅 A new day dawns! Quests have reset.")
     st.rerun()
@@ -68,7 +66,7 @@ for index, habit in enumerate(st.session_state.habits):
     quest_type = habit["type"]
     
     # Assign point values based on rules
-    pts = 15 if quest_type == "default" else 25
+    pts = 1500 if quest_type == "default" else 25
     label_text = f"{habit_name} (+{pts} XP)"
     # Render the checkbox
     check = st.checkbox(label_text, value=is_done, key=f"habit_{index}", disabled=is_done)
