@@ -103,15 +103,21 @@ with st.form(key="quest_crafter", clear_on_submit=True):
             st.warning("Please type something first!")
 
 st.divider()
-#Daily reset timer
-now = datetime.now()
-midnight = datetime.combine(now.date()+timedelta(days=1),datetime.min.time())
-time_remaining = midnight-now
+timer_container = st.container()
 
-hours, remainder = divmod(time_remaining.seconds,3600)
-minutes, _ = divmod(remainder, 60)
+with timer_container:
+    now = datetime.now()
+    midnight = datetime.combine(now.date() + timedelta(days=1), datetime.min.time())
+    time_remaining = midnight - now
 
-st.metric(label="⏳ Time Remaining for Daily Quests", value=f"{hours}h {minutes}m")
+    hours, remainder = divmod(time_remaining.seconds, 3600)
+    minutes, _ = divmod(remainder, 60)
+
+    st.metric(label="⏳ Time Remaining for Daily Quests", value=f"{hours}h {minutes}m")
+
+#Streamlit automatically refreshes this component every 60 seconds
+st.fragment(run_every=60)(lambda: None)()
+
 
 #Milestone badges for levelling
 st.subheader("🏆 Milestone Achievements")
