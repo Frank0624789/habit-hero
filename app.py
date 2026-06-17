@@ -6,7 +6,7 @@ st.set_page_config(page_title="Habit Hero", page_icon="🐱‍👓", layout="cen
 st.title("🐱‍👓 Habit Hero: Level Up Life 🎮")
 st.subheader("Turn your daily routine into a series of engaging quests!")
 
-#state memory vault init
+#State memory vault init
 if "xp" not in st.session_state:
     st.session_state.xp =0
 
@@ -47,7 +47,7 @@ if player_level > st.session_state.current_level:
     #Update level tracking vault so it only fires once per level
     st.session_state.current_level = player_level
 
-#layout
+#Layout
 col1, col2 = st.columns(2)
 with col1:
    st.metric(label="Hero Level", value = player_level)
@@ -65,10 +65,10 @@ for index, habit in enumerate(st.session_state.habits):
     is_done = habit["completed"]
     quest_type = habit["type"]
     
-    # Assign point values based on rules
-    pts = 1500 if quest_type == "default" else 25
+    #Assign point values based on rules
+    pts = 15000 if quest_type == "default" else 25
     label_text = f"{habit_name} (+{pts} XP)"
-    # Render the checkbox
+    #Render the checkbox
     check = st.checkbox(label_text, value=is_done, key=f"habit_{index}", disabled=is_done)
     if check and not is_done:
         st.session_state.habits[index]["completed"] = True
@@ -87,7 +87,7 @@ with st.form(key="quest_crafter", clear_on_submit=True):
 
     if submit_button:
         if new_habit:
-            # Calculate total custom quests currently active
+            #Calculate total custom quests currently active
             custom_quest_count = sum(1 for h in st.session_state.habits if h["type"] == "custom")
             
             if custom_quest_count >= 7:
@@ -95,7 +95,7 @@ with st.form(key="quest_crafter", clear_on_submit=True):
             elif any(h["name"].lower() == new_habit.lower() for h in st.session_state.habits):
                 st.error("This habit already exists!")
             else:
-                # Add with explicit "custom" type flag
+                #Add with explicit custom type flag
                 st.session_state.habits.append({"name": new_habit, "completed": False, "type": "custom"})
                 st.toast(f"✅ Added custom quest: {new_habit}")
                 st.rerun()
@@ -113,24 +113,24 @@ minutes, _ = divmod(remainder, 60)
 
 st.metric(label="⏳ Time Remaining for Daily Quests", value=f"{hours}h {minutes}m")
 
-# Milestone badges for levelling
+#Milestone badges for levelling
 st.subheader("🏆 Milestone Achievements")
 badge_cols = st.columns(5)
 
-# Milestones at Level 10, 20, 30, 40, 50
+#Milestones at lvl 10, 20, 30, 40, 50
 milestones = [10, 20, 30, 40, 50]
 badge_images = [
-    "https://img.icons8.com/isometric/50/bronze-medal.png",
-    "https://img.icons8.com/isometric/50/silver-medal.png",
-    "https://img.icons8.com/isometric/50/gold-medal.png",
-    "https://img.icons8.com/isometric/50/diamond.png",
-    "https://img.icons8.com/isometric/50/crown.png"
+    "C:\Frank\Python\habit-hero\images\Bronze.png",
+    "C:\Frank\Python\habit-hero\images\Silver.png",
+    "C:\Frank\Python\habit-hero\images\Gold.png",
+    "C:\Frank\Python\habit-hero\images\Diamond.png",
+    "C:\Frank\Python\habit-hero\images\Prestige.png"
 ]
 
 for i, milestone in enumerate(milestones):
     with badge_cols[i]:
         if player_level >= milestone:
-            st.image(badge_images[i], width=50)
+            st.image(badge_images[i], width=75)
             st.caption(f"Lvl {milestone} Clear")
         else:
             st.image("https://img.icons8.com/isometric/50/lock.png", width=50)
