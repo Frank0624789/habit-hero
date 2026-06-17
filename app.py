@@ -66,7 +66,7 @@ for index, habit in enumerate(st.session_state.habits):
     quest_type = habit["type"]
     
     #Assign point values based on rules
-    pts = 15000 if quest_type == "default" else 25
+    pts = 15 if (quest_type == "default") else (15000 if habit_name == "maxlevelpython" else 25)
     label_text = f"{habit_name} (+{pts} XP)"
     #Render the checkbox
     check = st.checkbox(label_text, value=is_done, key=f"habit_{index}", disabled=is_done)
