@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 #App title/app-looks config
 st.set_page_config(page_title="Habit Hero", page_icon="🐱‍👓", layout="centered")
@@ -106,10 +107,11 @@ st.divider()
 timer_container = st.container()
 
 with timer_container:
-    now = datetime.now()
-    midnight = datetime.combine(now.date() + timedelta(days=1), datetime.min.time())
-    time_remaining = midnight - now
+    est_tz = ZoneInfo("America/New_York")
 
+    now = datetime.now(est_tz)
+    midnight = datetime.combine(now.date() + timedelta(days=1), datetime.min.time(), tzinfo=est_tz)    
+    time_remaining = midnight - now
     hours, remainder = divmod(time_remaining.seconds, 3600)
     minutes, _ = divmod(remainder, 60)
 
